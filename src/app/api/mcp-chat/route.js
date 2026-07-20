@@ -30,6 +30,7 @@ export async function POST(request) {
 
     let agentResponse;
     try {
+        console.log("AGENT_URL =", process.env.AGENT_URL); // TEMP: debug Vercel env
         agentResponse = await fetch(`${AGENT_URL}/api/chat`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
