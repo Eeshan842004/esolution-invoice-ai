@@ -84,8 +84,8 @@ project_2/
 │                   sheets/ (gspread models mirroring the site's sheets.js),
 │                   services/ (Gmail smtplib, Gemini, Groq)
 ├── agent/          LangGraph agent (Groq Llama 3.3 70B) + FastAPI SSE API
-├── frontend/       legacy standalone chat UI (superseded — the chat now
-│                   lives inside ESolution at /ai-assistant)
+├── start.sh        runs both Python services (Render deploy)
+├── render.yaml     Render blueprint
 ├── scripts/        generate_keys.sh
 ├── docs/           ARCHITECTURE, SECURITY_WRITEUP, API_REFERENCE
 └── keys/           RSA key pair (git-ignored)

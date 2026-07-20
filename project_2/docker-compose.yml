@@ -65,16 +65,5 @@ services:
       AGENT_PORT: "8002"
       ALLOWED_ORIGINS: '["http://localhost:3000"]'
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    depends_on:
-      - agent
-    environment:
-      AGENT_API_URL: http://agent:8002
-
 volumes:
   pgdata:
