@@ -1,0 +1,42 @@
+# Render blueprint for the ESolution Python backend (MCP server + agent).
+# Deploy: Render dashboard → New → Blueprint → point at this repo.
+# Or configure a Web Service manually with the same build/start commands.
+services:
+  - type: web
+    name: esolution-ai
+    runtime: python
+    rootDir: project_2
+    plan: free
+    buildCommand: pip install -e mcp-server -e agent
+    startCommand: bash start.sh
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      # Secrets — set these in the Render dashboard (do NOT commit values):
+      - key: GOOGLE_SHEET_ID
+        sync: false
+      - key: GOOGLE_SERVICE_ACCOUNT_EMAIL
+        sync: false
+      - key: GOOGLE_PRIVATE_KEY
+        sync: false
+      - key: GMAIL_USER
+        sync: false
+      - key: GMAIL_APP_PASSWORD
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: OWNER_NAME
+        sync: false
+      - key: OWNER_EMAIL
+        sync: false
+      - key: OWNER_UPI_ID
+        sync: false
+      # Strong shared secret for the agent↔MCP OAuth handshake (any random string)
+      - key: OAUTH_CLIENT_SECRET
+        sync: false
+      # Public base URL of the deployed website (for portal links in tool output)
+      - key: NEXT_PUBLIC_BASE_URL
+        sync: false

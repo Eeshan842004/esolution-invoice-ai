@@ -39,3 +39,27 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# python (MCP server + agent virtualenvs / caches)
+**/.venv/
+**/__pycache__/
+**/*.py[cod]
+**/.pytest_cache/
+**/*.egg-info/
+
+# RSA signing keys (regenerated per environment)
+project_2/keys/*.pem
+project_2/service-account.json
+
+# local scratch / debug artifacts (not part of the project)
+/.tmp/
+/design/
+hash-out*.txt
+findings.md
+gemini.md
+progress.md
+task_plan.md
+sync-karma.mjs
+test-*.js
+test-*.mjs
+*.log

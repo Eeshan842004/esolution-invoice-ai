@@ -1,0 +1,80 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: unigate
+      POSTGRES_USER: unigate
+      POSTGRES_PASSWORD: unigate
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U unigate"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  mcp-server:
+    build:
+      context: ./mcp-server
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://unigate:unigate@postgres:5432/unigate
+      SERVER_HOST: 0.0.0.0
+      SERVER_PORT: "8000"
+      JWT_PRIVATE_KEY_PATH: keys/private.pem
+      JWT_PUBLIC_KEY_PATH: keys/public.pem
+      OAUTH_CLIENT_ID: unigate-agent
+      OAUTH_CLIENT_SECRET: ${OAUTH_CLIENT_SECRET:-change-me-in-production}
+      ALLOWED_ORIGINS: '["http://localhost:3000"]'
+      LOG_LEVEL: INFO
+    volumes:
+      - ./keys:/app/keys:ro
+    # Seed on first boot, then serve.
+    command: >
+      sh -c "python -m src.db.seed && python -m src.server http"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/healthz').status==200 else 1)\""]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+  agent:
+    build:
+      context: ./agent
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8002"
+    depends_on:
+      mcp-server:
+        condition: service_healthy
+    environment:
+      MCP_SERVER_URL: http://mcp-server:8000/mcp
+      AUTH_TOKEN_URL: http://mcp-server:8000/oauth/token
+      OAUTH_CLIENT_ID: unigate-agent
+      OAUTH_CLIENT_SECRET: ${OAUTH_CLIENT_SECRET:-change-me-in-production}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      AGENT_MODEL: ${AGENT_MODEL:-claude-opus-4-8}
+      AGENT_HOST: 0.0.0.0
+      AGENT_PORT: "8002"
+      ALLOWED_ORIGINS: '["http://localhost:3000"]'
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - agent
+    environment:
+      AGENT_API_URL: http://agent:8002
+
+volumes:
+  pgdata:
