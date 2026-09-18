@@ -1,15 +1,13 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import Groq from "groq-sdk";
 
-const groq = new Groq({
-    apiKey: process.env.GROQ_API_KEY,
-});
+const KIE_URL = "https://api.kie.ai/gemini-2.5-flash/v1/chat/completions";
 
 /**
  * POST /api/voice/process — Process voice transcript → extract invoice fields
- * Uses Groq (Llama3) instead of Gemini to avoid rate limits.
+ * Uses Kie.ai (Gemini 2.5 Flash) instead of the website's own Gemini key to
+ * avoid rate limits.
  * Body: { transcript: string }
  */
 export async function POST(request) {
@@ -81,7 +79,12 @@ Rules:
 - If anything unclear, return null for that field`;
         }
 
-        console.log("🧠 [Voice] Sending to Groq (llama-3.3-70b-versatile)...");
+        console.log("🧠 [Voice] Sending to Kie.ai (Gemini 2.5 Flash)...");
+
+        const kieApiKey = process.env.KIE_API_KEY;
+        if (!kieApiKey) {
+            throw new Error("KIE_API_KEY is not set in environment variables");
+        }
 
         const MAX_RETRIES = 3;
         const RETRY_DELAY_MS = 2000;
@@ -93,23 +96,34 @@ Rules:
                     await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
                 }
 
-                const chatCompletion = await groq.chat.completions.create({
-                    messages: [
-                        {
-                            role: "user",
-                            content: prompt,
-                        },
-                    ],
-                    model: "llama-3.3-70b-versatile",
-                    temperature: 0.1,
-                    max_tokens: 256,
+                const kieResponse = await fetch(KIE_URL, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${kieApiKey}`,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        messages: [{ role: "user", content: prompt }],
+                        temperature: 0.1,
+                        max_tokens: 256,
+                        stream: false,
+                    }),
                 });
 
-                const text = chatCompletion.choices[0]?.message?.content?.trim();
-                console.log("🧠 [Voice] Groq raw response:", text);
+                if (!kieResponse.ok) {
+                    const errBody = await kieResponse.text();
+                    const isRateLimit = kieResponse.status === 429;
+                    throw new Error(
+                        `Kie.ai API error ${kieResponse.status}${isRateLimit ? " (rate limit)" : ""}: ${errBody}`
+                    );
+                }
+
+                const kieData = await kieResponse.json();
+                const text = kieData.choices?.[0]?.message?.content?.trim();
+                console.log("🧠 [Voice] Kie.ai raw response:", text);
 
                 if (!text) {
-                    throw new Error("Empty response from Groq");
+                    throw new Error("Empty response from Kie.ai");
                 }
 
                 // Strip markdown fences if present

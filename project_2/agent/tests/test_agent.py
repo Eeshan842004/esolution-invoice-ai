@@ -46,8 +46,8 @@ async def test_tool_loading():
 
 
 @pytest.mark.skipif(
-    not os.environ.get("GROQ_API_KEY") and not settings.groq_api_key,
-    reason="GROQ_API_KEY not set (model construction requires it)",
+    not os.environ.get("KIE_API_KEY") and not settings.kie_api_key,
+    reason="KIE_API_KEY not set (model construction requires it)",
 )
 async def test_graph_builds():
     from src.agent import build_agent

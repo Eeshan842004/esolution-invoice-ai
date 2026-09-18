@@ -84,7 +84,7 @@ statuses `Unpaid`/`Pending` (alias), `Overdue`, `Paid`; amounts in INR.
 ### Documents
 | Tool | Params | Scopes | Returns |
 |------|--------|--------|---------|
-| `generate_linkedin_post` | `invoice_id`, `project_description?` | `document:read` | `{post_text, hashtags}` via Groq — **paid invoices only**. |
+| `generate_linkedin_post` | `invoice_id`, `project_description?` | `document:read` | `{post_text, hashtags}` via Kie.ai — **paid invoices only**. |
 | `get_certificate_status` | `invoice_id` | `document:read` | `{exists, certificate_id, download_url}`. |
 
 ---

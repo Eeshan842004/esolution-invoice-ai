@@ -15,7 +15,7 @@ freelancer (the ESolution Next.js app, sharing the same Google Sheet).
 |---|------|---------|
 | 1 | **Unauthenticated tool access** | OAuth 2.1 Bearer JWT required on every HTTP tool call; unauthenticated discovery returns an empty tool list. |
 | 2 | **Broken authorization / privilege escalation** | Per-tool permission scopes, deny-by-default for unregistered tools, `admin` as the only implicit super-scope. |
-| 3 | **Confused-deputy / token passthrough** | JWT audience + issuer are validated on every request; the server never forwards its received token to Google Sheets, Gmail, Groq or Gemini — each downstream uses its own credential. |
+| 3 | **Confused-deputy / token passthrough** | JWT audience + issuer are validated on every request; the server never forwards its received token to Google Sheets, Gmail, Kie.ai or Gemini — each downstream uses its own credential. |
 | 4 | **Algorithm-confusion attacks** | Verification algorithm is pinned to RS256; HS256-forged tokens signed with the public key are rejected. |
 | 5 | **Injection into the datastore** | Google Sheets is written through structured cell updates only (no query language); identifiers (`inv_*` ids, emails, dates, statuses) are regex-validated; free text is sanitized before storage. |
 | 6 | **SSRF** | `ssrf_guard` blocks private/loopback/link-local ranges, cloud-metadata endpoints, non-HTTP schemes, and credential-bearing URLs, with optional DNS-resolution checks. |
@@ -96,7 +96,7 @@ karma:read      karma:write      analytics:read   document:read
 - **Optional DNS resolution** to catch hostnames pointing at private addresses.
 
 The server's own outbound calls go only to pinned hosts (Google Sheets API,
-Gmail SMTP, Groq, Gemini) — no tool ever fetches a caller-supplied URL.
+Gmail SMTP, Kie.ai, Gemini) — no tool ever fetches a caller-supplied URL.
 
 ---
 

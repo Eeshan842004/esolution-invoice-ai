@@ -1,7 +1,7 @@
 # ESolution MCP — AI control plane for a real invoicing system
 
 **A production-grade, OAuth-secured MCP server wired into ESolution**, a live
-Next.js invoicing app for Indian freelancers — paired with a Groq-powered
+Next.js invoicing app for Indian freelancers — paired with a Kie.ai-powered
 LangGraph agent and a chat page inside the existing website. Seven manual
 clicks become one sentence: *"Create an invoice for Rahul, ₹50,000, due in 15
 days"*.
@@ -15,7 +15,7 @@ legal notices, payments, karma scores).
 
 ```
 ESolution UI (/ai-assistant)  ──▶  LangGraph Agent  ──▶  MCP Server        ──▶  Google Sheets
-  :3000 (Next.js, existing app)     :8002 (Groq, SSE)     :8811 (MCP + OAuth)     (Invoices + KarmaDB)
+  :3000 (Next.js, existing app)     :8002 (Kie.ai, SSE)   :8811 (MCP + OAuth)     (Invoices + KarmaDB)
 ```
 
 - **16 tools · 2 resources · 4 prompts** over invoices, payments, reminders,
@@ -29,7 +29,7 @@ ESolution UI (/ai-assistant)  ──▶  LangGraph Agent  ──▶  MCP Server 
 ## Quick start (local)
 
 Prerequisites: Python 3.11+, the ESolution repo-root `.env.local` already
-configured (Google Sheets service account, Gmail app password, `GROQ_API_KEY`,
+configured (Google Sheets service account, Gmail app password, `KIE_API_KEY`,
 `GEMINI_API_KEY` — the MCP server and agent reuse those automatically).
 
 ```bash
@@ -82,8 +82,8 @@ project_2/
 ├── mcp-server/     FastMCP server: 16 invoice tools, resources, prompts,
 │                   auth (OAuth/JWT/scopes), security (SSRF/rate-limit/audit),
 │                   sheets/ (gspread models mirroring the site's sheets.js),
-│                   services/ (Gmail smtplib, Gemini, Groq)
-├── agent/          LangGraph agent (Groq Llama 3.3 70B) + FastAPI SSE API
+│                   services/ (Gmail smtplib, Gemini, Kie.ai)
+├── agent/          LangGraph agent (Kie.ai — Gemini 2.5 Flash) + FastAPI SSE API
 ├── start.sh        runs both Python services (Render deploy)
 ├── render.yaml     Render blueprint
 ├── scripts/        generate_keys.sh
@@ -106,7 +106,7 @@ relay to the agent).
 
 Settings come from the repo-root `.env.local` (shared with the website) plus
 optional `mcp-server/.env` / `agent/.env` overrides — see
-[.env.example](.env.example). Key ones: `GROQ_API_KEY`, `GOOGLE_SHEET_ID`,
+[.env.example](.env.example). Key ones: `KIE_API_KEY`, `GOOGLE_SHEET_ID`,
 `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_PRIVATE_KEY`, `GMAIL_APP_PASSWORD`,
 `OAUTH_CLIENT_SECRET`, `RATE_LIMIT_RPM`, `JWT_EXPIRY_MINUTES`.
 

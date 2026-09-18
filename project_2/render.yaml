@@ -24,7 +24,7 @@ services:
         sync: false
       - key: GMAIL_APP_PASSWORD
         sync: false
-      - key: GROQ_API_KEY
+      - key: KIE_API_KEY
         sync: false
       - key: GEMINI_API_KEY
         sync: false

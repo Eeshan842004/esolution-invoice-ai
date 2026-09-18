@@ -1,6 +1,6 @@
 """Agent settings.
 
-GROQ_API_KEY is shared with the ESolution website, so the repo-root
+KIE_API_KEY is shared with the ESolution website, so the repo-root
 `.env.local` is read first; `agent/.env` can override anything locally.
 """
 
@@ -24,9 +24,11 @@ class Settings(BaseSettings):
         "karma:read karma:write analytics:read document:read"
     )
 
-    # LLM: Groq Llama 3.3 70B (free tier; same key the website already uses)
-    groq_api_key: str = ""
-    agent_model: str = "llama-3.3-70b-versatile"
+    # LLM: Kie.ai (Gemini 2.5 Flash), OpenAI-compatible endpoint; same key
+    # the website already uses. Kie.ai selects the model via the URL path
+    # (https://api.kie.ai/<model>/v1), not a "model" body field.
+    kie_api_key: str = ""
+    agent_model: str = "gemini-2.5-flash"
 
     # Agent API server
     agent_host: str = "0.0.0.0"

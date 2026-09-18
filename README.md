@@ -31,7 +31,7 @@ The interesting engineering isn't "it calls an LLM." It's **how the AI safely ge
 - **📊 Live dashboard** — outstanding / overdue / revenue at a glance, with status, days-overdue, and late penalties recomputed from raw data on every read (never trusted from storage).
 - **⭐ Client "Karma" reputation** — privacy-preserving (MD5-hashed emails) 0–5 star scoring from payment history; the AI warns before invoicing a risky client.
 - **📧 Emotion-aware reminders** — tone picked from AI sentiment analysis or day-based tiers (gentle → firm → urgent → legal), with a bulk "overdue sweep" that respects throttles.
-- **🧾 Documents** — Puppeteer-generated PDF invoices & completion certificates; Groq-written LinkedIn posts for paid projects; Gemini-drafted legal notices (gated to 30+ days overdue).
+- **🧾 Documents** — Puppeteer-generated PDF invoices & completion certificates; Kie.ai-written LinkedIn posts for paid projects; Gemini-drafted legal notices (gated to 30+ days overdue).
 - **✅ 119 automated tests** covering JWT/auth, scopes, SSRF, rate limiting, input validation, and cross-language business-logic parity.
 
 ---
@@ -52,12 +52,12 @@ flowchart TD
     end
 
     subgraph Render["Render — Python backend"]
-        AGENT["LangGraph Agent (:8002)<br/>Groq Llama 3.3 70B<br/>+ conversation memory"]
+        AGENT["LangGraph Agent (:8002)<br/>Kie.ai — Gemini 2.5 Flash<br/>+ conversation memory"]
         MCP["MCP Server (:8811)<br/>OAuth 2.1 · JWT · scopes<br/>rate-limit · SSRF · audit-log<br/>16 tools / 2 resources / 4 prompts"]
     end
 
     SHEET[("Google Sheets<br/>Invoices + KarmaDB")]
-    EXT["Gmail · Gemini · Groq"]
+    EXT["Gmail · Gemini · Kie.ai"]
 
     UI -->|clicks| API
     UI -->|chat, SSE| RELAY
@@ -87,7 +87,7 @@ flowchart LR
 | Layer | Technology |
 |---|---|
 | **Frontend** | Next.js 16 (App Router), React 19, NextAuth v4 (Google OAuth), Framer Motion, styled-jsx |
-| **AI agent** | LangGraph, Groq Llama 3.3 70B, langchain-mcp-adapters, FastAPI (SSE) |
+| **AI agent** | LangGraph, Kie.ai (Gemini 2.5 Flash), langchain-mcp-adapters, FastAPI (SSE) |
 | **MCP server** | FastMCP, OAuth 2.1 + RS256 JWT (PyJWT), pydantic-settings, structlog |
 | **Data & services** | Google Sheets (gspread / google-spreadsheet), Gmail (smtplib / Nodemailer), Gemini 2.0 Flash, Puppeteer (PDF/certificates) |
 | **Testing** | pytest, pytest-asyncio — 119 tests |
@@ -116,7 +116,7 @@ esolution-invoice-ai/
     │       ├── auth/             # OAuth server, JWT handler, scopes, middleware
     │       ├── security/         # rate limiter, SSRF guard, input validator, audit logger
     │       ├── sheets/           # gspread client + invoice/karma models (mirror sheets.js)
-    │       ├── services/         # Gmail, Gemini, Groq
+    │       ├── services/         # Gmail, Gemini, Kie.ai
     │       └── tools/            # 16 invoice-domain MCP tools
     ├── agent/                    # LangGraph agent + FastAPI SSE API
     ├── start.sh                  # runs both Python services (Render)
@@ -127,7 +127,7 @@ esolution-invoice-ai/
 
 ## Setup (local)
 
-**Prerequisites:** Node 20+, Python 3.11+, a Google service account with Sheets access, a Gmail App Password, and free API keys from [Groq](https://console.groq.com) and [Google AI Studio](https://aistudio.google.com).
+**Prerequisites:** Node 20+, Python 3.11+, a Google service account with Sheets access, a Gmail App Password, and API keys from [Kie.ai](https://kie.ai) and [Google AI Studio](https://aistudio.google.com).
 
 ### 1. Website
 
@@ -170,7 +170,7 @@ The app is **two hosting targets** — the website works fully on Vercel alone; 
 
 ### Python backend → Render
 1. New **Web Service** → root directory `project_2`, build `pip install -e mcp-server -e agent`, start `bash start.sh`, health check `/health`. (A [`render.yaml`](project_2/render.yaml) blueprint is included.)
-2. Add the Google / Gmail / Groq / Gemini env vars + a strong `OAUTH_CLIENT_SECRET`.
+2. Add the Google / Gmail / Kie.ai / Gemini env vars + a strong `OAUTH_CLIENT_SECRET`.
 3. Copy the service URL into the website's `AGENT_URL` on Vercel and redeploy.
 
 > Render's free tier sleeps after 15 min idle → the first AI message after a nap takes ~40s to wake.

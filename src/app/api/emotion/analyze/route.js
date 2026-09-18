@@ -4,7 +4,8 @@ import { updateInvoiceField, getInvoiceById } from "@/lib/sheets";
 /**
  * POST /api/emotion/analyze
  * Called by Google Apps Script when a client replies to an invoice email.
- * Uses Groq AI (Llama 3) to analyze emotional tone and recommend next action.
+ * Uses Kie.ai (Gemini 2.5 Flash) to analyze emotional tone and recommend
+ * the next action.
  *
  * Body: { invoiceId: string, replyText: string, clientEmail?: string }
  * Returns: { emotion, score, tone, waitDays, reasoning }
@@ -33,10 +34,10 @@ export async function POST(request) {
             console.warn("⚠️ [Emotion] Could not fetch invoice for context:", e.message);
         }
 
-        // --- Call Groq AI (Llama 3) ---
-        const groqApiKey = process.env.GROQ_API_KEY;
-        if (!groqApiKey) {
-            throw new Error("GROQ_API_KEY is not set in environment variables");
+        // --- Call Kie.ai (Gemini 2.5 Flash) ---
+        const kieApiKey = process.env.KIE_API_KEY;
+        if (!kieApiKey) {
+            throw new Error("KIE_API_KEY is not set in environment variables");
         }
 
         const prompt = `Analyze this client reply to an invoice email.
@@ -59,14 +60,13 @@ Guidelines:
 - If reply says will pay/cooperative → emotion=cooperative, tone=friendly_hindi, waitDays=3-5
 - If no real reply or vague → emotion=ghosting, tone=firm`;
 
-        const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        const kieResponse = await fetch("https://api.kie.ai/gemini-2.5-flash/v1/chat/completions", {
             method: "POST",
             headers: {
-                "Authorization": `Bearer ${groqApiKey}`,
+                "Authorization": `Bearer ${kieApiKey}`,
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                model: "llama-3.3-70b-versatile",
                 messages: [
                     {
                         role: "system",
@@ -79,17 +79,18 @@ Guidelines:
                 ],
                 temperature: 0.3,
                 max_tokens: 200,
+                stream: false,
             }),
         });
 
-        if (!groqResponse.ok) {
-            const errBody = await groqResponse.text();
-            throw new Error(`Groq API error ${groqResponse.status}: ${errBody}`);
+        if (!kieResponse.ok) {
+            const errBody = await kieResponse.text();
+            throw new Error(`Kie.ai API error ${kieResponse.status}: ${errBody}`);
         }
 
-        const groqData = await groqResponse.json();
-        const rawText = groqData.choices?.[0]?.message?.content?.trim() || "";
-        console.log("🧠 [Emotion] Raw Groq response:", rawText);
+        const kieData = await kieResponse.json();
+        const rawText = kieData.choices?.[0]?.message?.content?.trim() || "";
+        console.log("🧠 [Emotion] Raw Kie.ai response:", rawText);
 
         const cleaned = rawText.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
         const parsed = JSON.parse(cleaned);

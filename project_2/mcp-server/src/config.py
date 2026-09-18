@@ -1,7 +1,7 @@
 """Application settings loaded from environment / .env via pydantic-settings.
 
 Secrets are shared with the ESolution website: the repo-root `.env.local`
-(Google Sheets service account, Gmail app password, Groq/Gemini keys,
+(Google Sheets service account, Gmail app password, Kie.ai/Gemini keys,
 owner payment details) is read first, then `mcp-server/.env` for
 server-specific overrides (ports, JWT paths, OAuth client credentials).
 """
@@ -36,8 +36,8 @@ class Settings(BaseSettings):
 
     # LLM keys (reused from the website's .env.local)
     gemini_api_key: str = ""
-    groq_api_key: str = ""
-    groq_model: str = "llama-3.3-70b-versatile"
+    kie_api_key: str = ""
+    kie_model: str = "gemini-2.5-flash"
 
     # Portal links in tool responses point at the Next.js site
     next_public_base_url: str = "http://localhost:3000"

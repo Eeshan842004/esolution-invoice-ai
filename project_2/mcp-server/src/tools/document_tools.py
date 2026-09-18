@@ -6,7 +6,7 @@ from fastmcp import FastMCP
 
 from src.config import settings
 from src.sheets.invoice_model import get_invoice_by_id
-from src.services import groq_service
+from src.services import kie_service
 from src.security.input_validator import (
     sanitize_string,
     validate_invoice_id,
@@ -20,8 +20,8 @@ def register_document_tools(mcp: FastMCP) -> None:
                                      project_description: str = "") -> dict:
         """Write a LinkedIn post celebrating a completed (PAID) project.
 
-        Uses Groq Llama 3.3 to draft a 150-180 word post with hashtags.
-        Only works for paid invoices — never announce unpaid work.
+        Uses Kie.ai (Gemini 2.5 Flash) to draft a 150-180 word post with
+        hashtags. Only works for paid invoices — never announce unpaid work.
 
         Args:
             invoice_id: e.g. "inv_1726123456_a3f9c".
@@ -40,7 +40,7 @@ def register_document_tools(mcp: FastMCP) -> None:
                              "LinkedIn posts are only generated for paid projects"}
 
         description = sanitize_string(project_description, 500)
-        post_text = await groq_service.generate_linkedin_post(invoice, description)
+        post_text = await kie_service.generate_linkedin_post(invoice, description)
         hashtags = re.findall(r"#\w+", post_text)
         return {"post_text": post_text, "hashtags": hashtags}
 

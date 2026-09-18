@@ -135,8 +135,8 @@ def outbox(monkeypatch):
 
 @pytest.fixture
 def fake_llms(monkeypatch):
-    """Stub Gemini + Groq so document/legal tools never hit the network."""
-    from src.services import gemini_service, groq_service
+    """Stub Gemini + Kie.ai so document/legal tools never hit the network."""
+    from src.services import gemini_service, kie_service
 
     async def fake_notice(invoice, name, email):
         return (f"LEGAL DEMAND: pay ₹{invoice.get('total_amount_due')} "
@@ -147,7 +147,7 @@ def fake_llms(monkeypatch):
                 "#freelance #india #webdev #invoice #done")
 
     monkeypatch.setattr(gemini_service, "generate_legal_notice", fake_notice)
-    monkeypatch.setattr(groq_service, "generate_linkedin_post", fake_post)
+    monkeypatch.setattr(kie_service, "generate_linkedin_post", fake_post)
 
 
 @pytest.fixture(autouse=True)

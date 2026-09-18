@@ -28,7 +28,7 @@ server. Seven manual clicks become one sentence.
              │ the same Sheet          ▼
              ▼               ┌──────────────────┐
     ┌──────────────┐         │  LangGraph Agent  │
-    │ Google Sheets │◀────────│  (Groq Llama 3.3) │
+    │ Google Sheets │◀────────│  (Kie.ai/Gemini)  │
     │  (Invoices +  │  writes │  port 8002 (SSE)  │
     │   KarmaDB)    │         └────────┬──────────┘
     └──────▲───────┘                   │ MCP protocol
@@ -82,10 +82,11 @@ runs on **every** tool call:
 authenticate (RS256 JWT) → rate-limit → scope-check → execute → audit-log
 ```
 
-### The agent is Groq-powered (free)
-`agent/src/agent.py` builds a LangGraph ReAct loop with **Groq Llama 3.3 70B**
-(`langchain-groq`) — the same `GROQ_API_KEY` the website already uses for
-voice/emotion/LinkedIn. Tools are loaded over MCP via
+### The agent is powered by Kie.ai (Gemini 2.5 Flash)
+`agent/src/agent.py` builds a LangGraph ReAct loop with **Kie.ai's Gemini 2.5
+Flash**, via `langchain_openai.ChatOpenAI` pointed at Kie.ai's OpenAI-compatible
+endpoint (`langchain-openai`) — the same `KIE_API_KEY` the website already
+uses for voice/emotion/LinkedIn. Tools are loaded over MCP via
 `langchain-mcp-adapters`; tokens auto-refresh ~60s before expiry
 (`agent/src/mcp_client.py`). FastAPI exposes `POST /api/chat` as an SSE
 stream on port **8002**.
@@ -121,7 +122,7 @@ weekly collections review).
 | Google Sheets | `gspread` + `google-auth` | same service account as `sheets.js` |
 | Gmail | `smtplib` SSL :465 | same `GMAIL_APP_PASSWORD` as Nodemailer |
 | Gemini 2.0 Flash | REST via `httpx` | same `GEMINI_API_KEY` (legal notices) |
-| Groq Llama 3.3 | REST via `httpx` | same `GROQ_API_KEY` (LinkedIn posts) |
+| Kie.ai (Gemini 2.5 Flash) | REST via `httpx` | same `KIE_API_KEY` (LinkedIn posts) |
 
 ## Ports & processes
 

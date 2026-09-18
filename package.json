@@ -16,7 +16,6 @@
     "framer-motion": "^12.34.3",
     "google-auth-library": "^10.5.0",
     "google-spreadsheet": "^5.2.0",
-    "groq-sdk": "^0.37.0",
     "lucide-react": "^0.575.0",
     "md5": "^2.3.0",
     "next": "16.1.6",

@@ -1,7 +1,9 @@
-"""Groq Llama 3.3 70B via the OpenAI-compatible REST endpoint.
+"""Kie.ai (Gemini 2.5 Flash) via its OpenAI-compatible REST endpoint.
 
 Same key, model and prompt as the website's /api/linkedin/generate-post
-route (which also calls Groq with plain fetch).
+route (which also calls Kie.ai with plain fetch). Kie.ai selects the model
+via the URL path (.../<model>/v1/chat/completions), not a "model" body
+field.
 """
 
 from __future__ import annotations
@@ -12,25 +14,27 @@ import httpx
 
 from src.config import settings
 
-GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
+
+def _kie_url() -> str:
+    return f"https://api.kie.ai/{settings.kie_model}/v1/chat/completions"
 
 
 async def _chat(system: str, user: str, temperature: float = 0.7,
                 max_tokens: int = 500) -> str:
-    if not settings.groq_api_key:
-        raise RuntimeError("GROQ_API_KEY is not configured")
+    if not settings.kie_api_key:
+        raise RuntimeError("KIE_API_KEY is not configured")
     async with httpx.AsyncClient(timeout=60.0) as client:
         resp = await client.post(
-            GROQ_URL,
-            headers={"Authorization": f"Bearer {settings.groq_api_key}"},
+            _kie_url(),
+            headers={"Authorization": f"Bearer {settings.kie_api_key}"},
             json={
-                "model": settings.groq_model,
                 "messages": [
                     {"role": "system", "content": system},
                     {"role": "user", "content": user},
                 ],
                 "temperature": temperature,
                 "max_tokens": max_tokens,
+                "stream": False,
             },
         )
         resp.raise_for_status()

@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 
 /**
  * POST /api/linkedin/generate-post
- * Uses Groq AI to generate a compelling LinkedIn post for a completed project.
+ * Uses Kie.ai (Gemini 2.5 Flash) to generate a compelling LinkedIn post for a
+ * completed project.
  *
  * Body: { clientName, amount, paidDate, invoiceNotes, voiceDescription, freelancerName }
  * Returns: { success, postText }
@@ -26,9 +27,9 @@ export async function POST(request) {
             );
         }
 
-        const groqApiKey = process.env.GROQ_API_KEY;
-        if (!groqApiKey) {
-            throw new Error("GROQ_API_KEY is not set");
+        const kieApiKey = process.env.KIE_API_KEY;
+        if (!kieApiKey) {
+            throw new Error("KIE_API_KEY is not set");
         }
 
         const ownerName = freelancerName || process.env.OWNER_NAME || "ESolution";
@@ -63,16 +64,17 @@ Rules:
 
 Return ONLY the post text, nothing else.`;
 
-        console.log("📝 [LinkedIn] Generating post with Groq...");
+        console.log("📝 [LinkedIn] Generating post with Kie.ai (Gemini 2.5 Flash)...");
 
-        const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        // Kie.ai's OpenAI-compatible endpoint selects the model via the URL
+        // path, not a "model" body field.
+        const kieResponse = await fetch("https://api.kie.ai/gemini-2.5-flash/v1/chat/completions", {
             method: "POST",
             headers: {
-                "Authorization": `Bearer ${groqApiKey}`,
+                "Authorization": `Bearer ${kieApiKey}`,
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                model: "llama-3.3-70b-versatile",
                 messages: [
                     {
                         role: "system",
@@ -82,16 +84,17 @@ Return ONLY the post text, nothing else.`;
                 ],
                 temperature: 0.7,
                 max_tokens: 500,
+                stream: false,
             }),
         });
 
-        if (!groqResponse.ok) {
-            const errBody = await groqResponse.text();
-            throw new Error(`Groq API error ${groqResponse.status}: ${errBody}`);
+        if (!kieResponse.ok) {
+            const errBody = await kieResponse.text();
+            throw new Error(`Kie.ai API error ${kieResponse.status}: ${errBody}`);
         }
 
-        const groqData = await groqResponse.json();
-        const postText = groqData.choices?.[0]?.message?.content?.trim() || "";
+        const kieData = await kieResponse.json();
+        const postText = kieData.choices?.[0]?.message?.content?.trim() || "";
 
         console.log("✅ [LinkedIn] Post generated successfully");
 
