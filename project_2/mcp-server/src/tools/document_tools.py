@@ -20,7 +20,7 @@ def register_document_tools(mcp: FastMCP) -> None:
                                      project_description: str = "") -> dict:
         """Write a LinkedIn post celebrating a completed (PAID) project.
 
-        Uses Kie.ai (Gemini 2.5 Flash) to draft a 150-180 word post with
+        Uses Kie.ai (Gemini 3.8 Flash) to draft a 150-180 word post with
         hashtags. Only works for paid invoices — never announce unpaid work.
 
         Args:

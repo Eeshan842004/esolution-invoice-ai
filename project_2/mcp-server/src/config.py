@@ -37,7 +37,7 @@ class Settings(BaseSettings):
     # LLM keys (reused from the website's .env.local)
     gemini_api_key: str = ""
     kie_api_key: str = ""
-    kie_model: str = "gemini-2.5-flash"
+    kie_model: str = "gemini-3-8-flash-openai"
 
     # Portal links in tool responses point at the Next.js site
     next_public_base_url: str = "http://localhost:3000"

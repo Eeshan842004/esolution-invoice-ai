@@ -4,7 +4,7 @@ import { updateInvoiceField, getInvoiceById } from "@/lib/sheets";
 /**
  * POST /api/emotion/analyze
  * Called by Google Apps Script when a client replies to an invoice email.
- * Uses Kie.ai (Gemini 2.5 Flash) to analyze emotional tone and recommend
+ * Uses Kie.ai (Gemini 3.8 Flash) to analyze emotional tone and recommend
  * the next action.
  *
  * Body: { invoiceId: string, replyText: string, clientEmail?: string }
@@ -34,7 +34,7 @@ export async function POST(request) {
             console.warn("⚠️ [Emotion] Could not fetch invoice for context:", e.message);
         }
 
-        // --- Call Kie.ai (Gemini 2.5 Flash) ---
+        // --- Call Kie.ai (Gemini 3.8 Flash) ---
         const kieApiKey = process.env.KIE_API_KEY;
         if (!kieApiKey) {
             throw new Error("KIE_API_KEY is not set in environment variables");
@@ -60,7 +60,7 @@ Guidelines:
 - If reply says will pay/cooperative → emotion=cooperative, tone=friendly_hindi, waitDays=3-5
 - If no real reply or vague → emotion=ghosting, tone=firm`;
 
-        const kieResponse = await fetch("https://api.kie.ai/gemini-2.5-flash/v1/chat/completions", {
+        const kieResponse = await fetch("https://api.kie.ai/gemini-3-8-flash-openai/v1/chat/completions", {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${kieApiKey}`,

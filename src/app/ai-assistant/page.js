@@ -19,7 +19,7 @@ export default function AiAssistantPage() {
                         <Wrench size={12} /> 16 MCP tools
                     </span>
                     <span className="pill">
-                        <Zap size={12} /> Gemini 2.5 Flash
+                        <Zap size={12} /> Gemini 3.8 Flash
                     </span>
                 </div>
             </div>

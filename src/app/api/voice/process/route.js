@@ -2,11 +2,11 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
-const KIE_URL = "https://api.kie.ai/gemini-2.5-flash/v1/chat/completions";
+const KIE_URL = "https://api.kie.ai/gemini-3-8-flash-openai/v1/chat/completions";
 
 /**
  * POST /api/voice/process — Process voice transcript → extract invoice fields
- * Uses Kie.ai (Gemini 2.5 Flash) instead of the website's own Gemini key to
+ * Uses Kie.ai (Gemini 3.8 Flash) instead of the website's own Gemini key to
  * avoid rate limits.
  * Body: { transcript: string }
  */
@@ -79,7 +79,7 @@ Rules:
 - If anything unclear, return null for that field`;
         }
 
-        console.log("🧠 [Voice] Sending to Kie.ai (Gemini 2.5 Flash)...");
+        console.log("🧠 [Voice] Sending to Kie.ai (Gemini 3.8 Flash)...");
 
         const kieApiKey = process.env.KIE_API_KEY;
         if (!kieApiKey) {

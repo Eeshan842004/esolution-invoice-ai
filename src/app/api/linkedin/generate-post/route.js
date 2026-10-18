@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 /**
  * POST /api/linkedin/generate-post
- * Uses Kie.ai (Gemini 2.5 Flash) to generate a compelling LinkedIn post for a
+ * Uses Kie.ai (Gemini 3.8 Flash) to generate a compelling LinkedIn post for a
  * completed project.
  *
  * Body: { clientName, amount, paidDate, invoiceNotes, voiceDescription, freelancerName }
@@ -64,11 +64,11 @@ Rules:
 
 Return ONLY the post text, nothing else.`;
 
-        console.log("📝 [LinkedIn] Generating post with Kie.ai (Gemini 2.5 Flash)...");
+        console.log("📝 [LinkedIn] Generating post with Kie.ai (Gemini 3.8 Flash)...");
 
         // Kie.ai's OpenAI-compatible endpoint selects the model via the URL
         // path, not a "model" body field.
-        const kieResponse = await fetch("https://api.kie.ai/gemini-2.5-flash/v1/chat/completions", {
+        const kieResponse = await fetch("https://api.kie.ai/gemini-3-8-flash-openai/v1/chat/completions", {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${kieApiKey}`,

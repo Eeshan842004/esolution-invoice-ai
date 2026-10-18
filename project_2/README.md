@@ -83,7 +83,7 @@ project_2/
 │                   auth (OAuth/JWT/scopes), security (SSRF/rate-limit/audit),
 │                   sheets/ (gspread models mirroring the site's sheets.js),
 │                   services/ (Gmail smtplib, Gemini, Kie.ai)
-├── agent/          LangGraph agent (Kie.ai — Gemini 2.5 Flash) + FastAPI SSE API
+├── agent/          LangGraph agent (Kie.ai — Gemini 3.8 Flash) + FastAPI SSE API
 ├── start.sh        runs both Python services (Render deploy)
 ├── render.yaml     Render blueprint
 ├── scripts/        generate_keys.sh

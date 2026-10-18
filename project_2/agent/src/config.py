@@ -24,11 +24,13 @@ class Settings(BaseSettings):
         "karma:read karma:write analytics:read document:read"
     )
 
-    # LLM: Kie.ai (Gemini 2.5 Flash), OpenAI-compatible endpoint; same key
+    # LLM: Kie.ai (Gemini 3.8 Flash), OpenAI-compatible endpoint; same key
     # the website already uses. Kie.ai selects the model via the URL path
-    # (https://api.kie.ai/<model>/v1), not a "model" body field.
+    # (https://api.kie.ai/<model>/v1), not a "model" body field. The "-openai"
+    # suffix selects the OpenAI-compatible interface for this model (plain
+    # "gemini-3-8-flash" is Gemini's native format, not /chat/completions).
     kie_api_key: str = ""
-    agent_model: str = "gemini-2.5-flash"
+    agent_model: str = "gemini-3-8-flash-openai"
 
     # Agent API server
     agent_host: str = "0.0.0.0"

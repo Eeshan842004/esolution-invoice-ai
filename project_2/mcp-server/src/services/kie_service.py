@@ -1,4 +1,4 @@
-"""Kie.ai (Gemini 2.5 Flash) via its OpenAI-compatible REST endpoint.
+"""Kie.ai (Gemini 3.8 Flash) via its OpenAI-compatible REST endpoint.
 
 Same key, model and prompt as the website's /api/linkedin/generate-post
 route (which also calls Kie.ai with plain fetch). Kie.ai selects the model

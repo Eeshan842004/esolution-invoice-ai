@@ -52,7 +52,7 @@ flowchart TD
     end
 
     subgraph Render["Render — Python backend"]
-        AGENT["LangGraph Agent (:8002)<br/>Kie.ai — Gemini 2.5 Flash<br/>+ conversation memory"]
+        AGENT["LangGraph Agent (:8002)<br/>Kie.ai — Gemini 3.8 Flash<br/>+ conversation memory"]
         MCP["MCP Server (:8811)<br/>OAuth 2.1 · JWT · scopes<br/>rate-limit · SSRF · audit-log<br/>16 tools / 2 resources / 4 prompts"]
     end
 
@@ -87,7 +87,7 @@ flowchart LR
 | Layer | Technology |
 |---|---|
 | **Frontend** | Next.js 16 (App Router), React 19, NextAuth v4 (Google OAuth), Framer Motion, styled-jsx |
-| **AI agent** | LangGraph, Kie.ai (Gemini 2.5 Flash), langchain-mcp-adapters, FastAPI (SSE) |
+| **AI agent** | LangGraph, Kie.ai (Gemini 3.8 Flash), langchain-mcp-adapters, FastAPI (SSE) |
 | **MCP server** | FastMCP, OAuth 2.1 + RS256 JWT (PyJWT), pydantic-settings, structlog |
 | **Data & services** | Google Sheets (gspread / google-spreadsheet), Gmail (smtplib / Nodemailer), Gemini 2.0 Flash, Puppeteer (PDF/certificates) |
 | **Testing** | pytest, pytest-asyncio — 119 tests |

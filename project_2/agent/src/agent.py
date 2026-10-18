@@ -1,4 +1,4 @@
-"""LangGraph agent: an explicit StateGraph wiring Kie.ai's Gemini 2.5 Flash
+"""LangGraph agent: an explicit StateGraph wiring Kie.ai's Gemini 3.8 Flash
 to the ESolution MCP tools with a standard agent/tools loop.
 
 Kie.ai exposes an OpenAI-compatible /v1/chat/completions endpoint, so the
@@ -13,11 +13,22 @@ The graph is compiled once and cached, with an in-memory checkpointer so
 each conversation_id (thread) keeps its history across requests — required
 for multi-turn flows like "create an invoice" -> "what's the email?" ->
 "rahul@x.com". Memory is per-process by design; restart clears it.
+
+Kie.ai quirk: unlike the standard OpenAI contract (which allows an assistant
+message to carry empty/null content when it only holds tool_calls — exactly
+what a pure tool-call turn looks like), Kie.ai's backend rejects ANY message
+with blank content, including that one. Since that message gets replayed in
+the next turn's history (every multi-tool conversation does this), a bare
+tool-call turn would break every follow-up call. _ensure_nonblank_content()
+patches the content in place before it's stored in graph state, so the
+replayed history always satisfies Kie.ai — the user never sees the
+placeholder text since the original (empty) stream already completed by
+the time this runs.
 """
 
 from datetime import date
 
-from langchain_core.messages import SystemMessage
+from langchain_core.messages import AIMessage, SystemMessage
 from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import START, StateGraph
@@ -29,6 +40,18 @@ from src.prompts import SYSTEM_PROMPT
 from src.state import AgentState
 
 _graph = None
+
+_BLANK_CONTENT_PLACEHOLDER = "Working on it..."
+
+
+def _ensure_nonblank_content(message: AIMessage) -> AIMessage:
+    """Kie.ai rejects messages with blank/whitespace-only content — including
+    a pure tool-call turn, whose content is legitimately empty per the
+    standard OpenAI contract. Swap in a placeholder so the message survives
+    being replayed in the next request's history."""
+    if message.tool_calls and not str(message.content or "").strip():
+        message.content = _BLANK_CONTENT_PLACEHOLDER
+    return message
 
 
 async def build_agent():
@@ -52,7 +75,7 @@ async def build_agent():
         system = SystemMessage(
             content=SYSTEM_PROMPT.replace("{today}", date.today().isoformat()))
         response = await model.ainvoke([system, *state["messages"]])
-        return {"messages": [response]}
+        return {"messages": [_ensure_nonblank_content(response)]}
 
     builder = StateGraph(AgentState)
     builder.add_node("agent", call_model)
