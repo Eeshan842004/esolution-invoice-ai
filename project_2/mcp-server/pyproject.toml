@@ -3,9 +3,9 @@ name = "esolution-mcp"
 version = "1.0.0"
 description = "ESolution - secure, OAuth-protected MCP server for freelancer invoice management (Google Sheets backend)"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.11,<3.13"
 dependencies = [
-    "fastmcp>=2.10",
+    "fastmcp>=2.10,<4.0",
     "fastapi>=0.115",
     "uvicorn>=0.30",
     "gspread>=6.0",
